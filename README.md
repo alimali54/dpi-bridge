@@ -40,5 +40,16 @@ Kaynak kodundan derlemek isterseniz:
 
 Bu proje **MIT Lisansı** ile lisanslanmıştır. Daha fazla bilgi için `LICENSE` dosyasına göz atın.
 
+## 📜 Credits & Acknowledgments
+
+Bu proje, aşağıdaki harika açık kaynaklı araçları bir araya getirerek çalışmaktadır:
+
+* **[GoodbyeDPI](https://github.com/ValdikSS/GoodbyeDPI)** - ValdikSS tarafından geliştirilen pasif DPI engelleyici.
+* **[dnscrypt-proxy](https://github.com/DNSCrypt/dnscrypt-proxy)** - DNS trafiğini şifrelemek ve güvenli DNS kullanmak için.
+* **[go-pcap2socks](https://github.com/DaniilSokolyuk/go-pcap2socks)** - Pcap trafiğini SOCKS vekillere yönlendiren ağ köprüsü.
+* **[Npcap](https://npcap.com/)** - Windows için paket yakalama kütüphanesi.
+
+Bu araçların her biri kendi lisansları altında korunmaktadır. Onların emeği olmadan bu proje mümkün olmazdı.
+
 ---
 *Not: Bu araç bağımsız bir projedir ve üçüncü taraf yazılımların (GoodbyeDPI, DNSCrypt, go-pcap2socks vb.) otomatize edilmesini sağlar.*
