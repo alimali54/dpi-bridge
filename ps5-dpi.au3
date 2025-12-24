@@ -25,7 +25,8 @@ EndFunc
 
 ; Güvenlik Duvari Sorgu Fonksiyonu
 Func HasFirewallRule($fullPath)
-    Local $psCmd = 'powershell -Command "Get-NetFirewallApplicationFilter -Program ''' & $fullPath & ''' -ErrorAction SilentlyContinue"'
+	Local $fixedPath = StringReplace($fullPath, "I", "i")
+    Local $psCmd = 'powershell -Command "Get-NetFirewallApplicationFilter -Program ''' & $fixedPath & ''' -ErrorAction SilentlyContinue"'
     Local $iPID = Run(@ComSpec & ' /c ' & $psCmd, "", @SW_HIDE, $STDOUT_CHILD)
     ProcessWaitClose($iPID)
     Return (StringLen(StdoutRead($iPID)) > 10)
@@ -40,6 +41,8 @@ Func CleanUpServices()
     Next
 EndFunc
 
+CleanUpServices()
+
 ; --- ADIM 1: NPCAP KONTROL  ---
 If Not FileExists(@SystemDir & "\Packet.dll") Then
     LogMsg("HATA: Npcap yüklü değil! Program durduruldu.")
@@ -48,7 +51,7 @@ If Not FileExists(@SystemDir & "\Packet.dll") Then
 EndIf
 LogMsg("[OK] Npcap yüklü.")
 
-; --- ADIM 2: G VENLIK DUVARI TETIKLEME ---
+; --- ADIM 2: GÜVENLIK DUVARI TETIKLEME ---
 Local $apps[2] = [$dnsDir & "\dnscrypt-proxy.exe", $pcapDir & "\go-pcap2socks.exe"]
 Local $appNames[2] = ["dnscrypt-proxy.exe", "go-pcap2socks.exe"]
 
@@ -69,8 +72,6 @@ For $i = 0 To 1
         LogMsg("[OK] " & $appNames[$i] & " güvenlik duvarı izni mevcut.")
     EndIf
 Next
-
-; --- ADIM 3: GOODBYEDPI PARAMETRE DENEME ---
 
 ; --- ADIM 3: GOODBYEDPI PARAMETRE DENEME ---
 LogMsg("--- Sürücü Kontrolü ---")
