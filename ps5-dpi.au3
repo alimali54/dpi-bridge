@@ -5,7 +5,11 @@
 #include <Inet.au3>
 #include <File.au3>          ; Dosya okuma işlemleri için gerekli
 #include <Array.au3>         ; Dizi işlemleri için gerekli
+#include <TrayConstants.au3>
 #RequireAdmin
+
+Opt("TrayMenuMode", 3) ; Varsayılan menü öğelerini (Script Paused/Exit) kaldırır ve kontrolü bize verir.
+Opt("TrayOnEventMode", 0) ; Event modunu kapalı tutuyoruz ki TrayGetMsg() ile yakalayabilelim.
 
 ; --- Degiskenler ---
 Local $gdpiDir = @ScriptDir & "\goodbyedpi"
@@ -141,6 +145,23 @@ For $p In $params
     If $iBytes > 0 Then
         LogMsg("[BAŞARILI] Erişim engeli aşma başarılı!")
         $finalParam = $p
+
+		; --- STRATEJİ LİSTESİNİ GÜNCELLE VE DOSYAYA YAZ ---
+        ; Eğer çalışan strateji listenin başında değilse, yerini değiştirip kaydet
+        If $p <> $params[0] Then
+            LogMsg("Strateji önceliği güncelleniyor...")
+
+            ; Çalışan parametreyi bul ve diziden çıkar
+            Local $idx = _ArraySearch($params, $p)
+            _ArrayDelete($params, $idx)
+
+            ; En başa ekle
+            _ArrayInsert($params, 0, $p)
+
+            ; Dosyaya geri yaz (Üzerine yazar)
+            _FileWriteFromArray($strategyFile, $params)
+        EndIf
+
         ExitLoop
     EndIf
     LogMsg("Başarısız")
@@ -177,12 +198,43 @@ Else
     LogMsg("HATA: Araçlardan biri başlatılamadı.")
 EndIf
 
+; --- Tepsi Menüsü Hazırlığı ---
+Local $iRestoreItem = TrayCreateItem("Göster")
+TrayCreateItem("") ; Ayırıcı çizgi
+Local $iExitItem = TrayCreateItem("Çıkış")
+TraySetState(1)
+
 While 1
-    If GUIGetMsg() = $GUI_EVENT_CLOSE Then
-        ProcessClose("goodbyedpi.exe")
-        ;ProcessClose("dnscrypt-proxy.exe")
-        ProcessClose("go-pcap2socks.exe")
-		CleanUpServices()
-        Exit
-    EndIf
+    Local $nMsg = GUIGetMsg()
+    Switch $nMsg
+        Case $GUI_EVENT_CLOSE
+            _ExitApp() ; Çıkış fonksiyonuna yönlendir
+
+        Case $GUI_EVENT_MINIMIZE
+            GUISetState(@SW_HIDE, $hGUI)
+            TrayTip("DPI-Bridge", "Program arka planda çalışıyor.", 5, 1)
+    EndSwitch
+
+    ; Tepsi Olaylarını Dinle
+    Local $tMsg = TrayGetMsg()
+    Switch $tMsg
+        Case $TRAY_EVENT_PRIMARYUP ; Sol tıklandığında direkt göster
+            GUISetState(@SW_SHOW, $hGUI)
+            GUISetState(@SW_RESTORE, $hGUI)
+
+        Case $iRestoreItem ; Menüden "Göster" seçilirse
+            GUISetState(@SW_SHOW, $hGUI)
+            GUISetState(@SW_RESTORE, $hGUI)
+
+        Case $iExitItem ; Menüden "Çıkış" seçilirse
+            _ExitApp()
+    EndSwitch
 WEnd
+
+; Temiz çıkış için fonksiyon
+Func _ExitApp()
+    ProcessClose("goodbyedpi.exe")
+    ProcessClose("go-pcap2socks.exe")
+    CleanUpServices()
+    Exit
+EndFunc
