@@ -43,8 +43,8 @@ Bu araç seti, bilgisayarınızı bir ağ geçidine dönüştürür. Süreç şu
 | **IP Adresi** | `172.24.2.10` (veya 172.24.2.2 - 255 arası herhangi bir sayı) |
 | **Alt Ağ Maskesi** | `255.255.0.0` |
 | **Ağ Geçidi** | `172.24.2.1` |
-| **Birincil DNS** | *Programın sonunda verilen Local IP* |
-| **İkincil DNS** | *Programın sonunda verilen Local IP* |
+| **Birincil DNS** | 1.1.1.1 | (DNS'e ne yazıldığının önemi yok, PC'nin DNS'ini alacaktır)
+| **İkincil DNS** | 8.8.8.8 |
 
 ## Kurulum (Geliştiriciler İçin)
 
