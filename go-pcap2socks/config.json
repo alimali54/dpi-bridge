@@ -6,7 +6,7 @@
   "dns": {
     "servers": [
       {
-        "address": "local"
+        "address": "9.9.9.10:9953"
       }
     ]
   },
